@@ -1,0 +1,13 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="/icons">
+        <file>logo/primary.png</file>
+        <file>logo/secondary_darkbg.png</file>
+        <file>logo/tertiary_accent.png</file>
+        <file>logo/quaternary_ui.png</file>
+        <file>logo/fifth_heart.png</file>
+        <file>icons/scan.svg</file>
+        <file>icons/add.svg</file>
+        <file>icons/sync.svg</file>
+    </qresource>
+</RCC>
