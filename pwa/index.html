@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>HeartLib – Library Portal</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <meta name="theme-color" content="#2c3e50">
+    
+    <!-- QR / Barcode scanner library -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.2s, border-color 0.2s;
+        }
+
+        /* Light theme (default) */
+        :root {
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #1a1a2e;
+            --text-secondary: #555;
+            --accent: #2c3e50;
+            --accent-hover: #1a252f;
+            --border: #e0e0e0;
+            --shadow: 0 4px 12px rgba(0,0,0,0.05);
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --info: #3498db;
+        }
+
+        body.dark {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-card: #2d2d2d;
+            --text-primary: #f0f0f0;
+            --text-secondary: #aaa;
+            --accent: #3498db;
+            --accent-hover: #2980b9;
+            --border: #444;
+            --shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            padding-bottom: 70px;
+        }
+
+        /* Header */
+        .app-header {
+            background: var(--accent);
+            color: white;
+            padding: 16px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: rgba(44, 62, 80, 0.95);
+        }
+        .dark .app-header {
+            background: rgba(30, 30, 46, 0.95);
+        }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .logo h1 {
+            font-size: 1.4rem;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo p {
+            font-size: 0.7rem;
+            opacity: 0.8;
+        }
+        .controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .theme-toggle, .lang-select {
+            background: rgba(255,255,255,0.15);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .lang-select {
+            background: rgba(255,255,255,0.2);
+        }
+        .mode-switch {
+            display: flex;
+            background: rgba(0,0,0,0.2);
+            border-radius: 40px;
+            padding: 4px;
+        }
+        .mode-btn {
+            padding: 8px 20px;
+            border: none;
+            background: transparent;
+            color: white;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .mode-btn.active {
+            background: white;
+            color: #2c3e50;
+        }
+
+        /* Main container */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px 16px;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border-radius: 28px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        /* Patron bar */
+        .patron-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50px;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            color: white;
+        }
+        .patron-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .patron-avatar {
+            background: white;
+            color: #667eea;
+            width: 44px;
+            height: 44px;
+            border-radius: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .scan-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.5);
+            padding: 8px 16px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .scan-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Search */
+        .search-box {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .search-box input {
+            flex: 1;
+            padding: 14px 18px;
+            border: 1px solid var(--border);
+            border-radius: 60px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+        .search-box button {
+            background: var(--accent);
+            border: none;
+            padding: 0 22px;
+            border-radius: 60px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Book / Loan cards */
+        .book-card, .loan-card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border);
+        }
+        .book-info h3 {
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+        .book-info p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .status-available {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-unavailable {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .action-btn, .renew-btn {
+            background: var(--accent);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 40px;
+            color: white;
+            cursor: pointer;
+        }
+        .renew-btn {
+            background: var(--success);
+        }
+        .overdue {
+            color: var(--danger);
+            font-weight: bold;
+        }
+
+        /* Bottom navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 12px;
+            box-shadow: 0 -2px 12px rgba(0,0,0,0.1);
+            border-top: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+            background: rgba(var(--bg-card-rgb), 0.9);
+        }
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            padding: 6px 16px;
+            border-radius: 40px;
+            transition: 0.2s;
+        }
+        .nav-item.active {
+            background: var(--accent);
+            color: white;
+        }
+        .nav-icon {
+            font-size: 1.4rem;
+        }
+        .nav-label {
+            font-size: 0.7rem;
+        }
+
+        /* Staff grid */
+        .staff-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .staff-card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            transition: transform 0.1s;
+        }
+        .staff-card:active {
+            transform: scale(0.97);
+        }
+        .staff-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        /* Modal scanner */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: var(--bg-card);
+            width: 90%;
+            max-width: 400px;
+            border-radius: 32px;
+            padding: 20px;
+            text-align: center;
+        }
+        #qr-reader {
+            width: 100%;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        .hidden {
+            display: none;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .mt-3 {
+            margin-top: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-header">
+    <div class="header-top">
+        <div class="logo">
+            <h1>❤️ HeartLib</h1>
+            <p data-i18n="tagline">Your Community Library</p>
+        </div>
+        <div class="controls">
+            <button class="theme-toggle" id="themeToggle">🌙 Dark</button>
+            <select class="lang-select" id="langSelect">
+                <option value="en">🇬🇧 English</option>
+                <option value="es">🇪🇸 Español</option>
+                <option value="fr">🇫🇷 Français</option>
+            </select>
+        </div>
+    </div>
+    <div class="mode-switch" id="modeSwitch">
+        <button class="mode-btn active" data-mode="patron" data-i18n="patron_mode">📖 Patron</button>
+        <button class="mode-btn" data-mode="staff" data-i18n="staff_mode">🔧 Staff</button>
+    </div>
+</div>
+
+<!-- Patron View -->
+<div id="patronView" class="container">
+    <div class="patron-bar">
+        <div class="patron-info">
+            <div class="patron-avatar" id="patronAvatar">👤</div>
+            <div>
+                <div id="patronName" data-i18n="not_logged">Not logged in</div>
+                <div id="patronLoans" style="font-size:0.7rem">0 active loans</div>
+            </div>
+        </div>
+        <button class="scan-btn" id="scanPatronBtn" data-i18n="scan_card">📇 Scan Card</button>
+    </div>
+
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="🔍 Search title, author, ISBN..." data-i18n-placeholder="search_placeholder">
+        <button id="searchBtn" data-i18n="search">🔍</button>
+    </div>
+
+    <div class="bottom-nav" id="patronTabs">
+        <div class="nav-item active" data-tab="catalog">
+            <div class="nav-icon">📚</div>
+            <div class="nav-label" data-i18n="catalog">Catalog</div>
+        </div>
+        <div class="nav-item" data-tab="loans">
+            <div class="nav-icon">📖</div>
+            <div class="nav-label" data-i18n="my_loans">My Loans</div>
+        </div>
+        <div class="nav-item" data-tab="holds">
+            <div class="nav-icon">⏰</div>
+            <div class="nav-label" data-i18n="holds">Holds</div>
+        </div>
+    </div>
+
+    <div id="catalogTab" class="tab-content">
+        <div id="searchResults"></div>
+    </div>
+    <div id="loansTab" class="tab-content hidden">
+        <div id="loansList"></div>
+    </div>
+    <div id="holdsTab" class="tab-content hidden">
+        <div id="holdsList"></div>
+    </div>
+</div>
+
+<!-- Staff View -->
+<div id="staffView" class="container hidden">
+    <div class="staff-grid">
+        <div class="staff-card" data-action="checkout">
+            <div class="staff-icon">📖</div>
+            <div class="staff-title" data-i18n="staff_checkout">Check Out</div>
+        </div>
+        <div class="staff-card" data-action="return">
+            <div class="staff-icon">🔄</div>
+            <div class="staff-title" data-i18n="staff_return">Return</div>
+        </div>
+        <div class="staff-card" data-action="addBook">
+            <div class="staff-icon">➕</div>
+            <div class="staff-title" data-i18n="staff_add_book">Add Book</div>
+        </div>
+        <div class="staff-card" data-action="inventory">
+            <div class="staff-icon">📊</div>
+            <div class="staff-title" data-i18n="staff_inventory">Inventory</div>
+        </div>
+        <div class="staff-card" data-action="patrons">
+            <div class="staff-icon">👥</div>
+            <div class="staff-title" data-i18n="staff_patrons">Patrons</div>
+        </div>
+        <div class="staff-card" data-action="reports">
+            <div class="staff-icon">📈</div>
+            <div class="staff-title" data-i18n="staff_reports">Reports</div>
+        </div>
+    </div>
+    <div id="staffResult"></div>
+</div>
+
+<!-- Scanner Modal -->
+<div id="scannerModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header" data-i18n="scan_barcode">Scan Barcode</div>
+        <div id="qr-reader" style="width: 100%;"></div>
+        <button id="closeScanner" style="margin-top:12px; width:100%;" data-i18n="cancel">Cancel</button>
+    </div>
+</div>
+
+<script>
+    // ---------- I18n Translations ----------
+    const translations = {
+        en: {
+            tagline: "Your Community Library",
+            patron_mode: "📖 Patron",
+            staff_mode: "🔧 Staff",
+            not_logged: "Not logged in",
+            scan_card: "📇 Scan Card",
+            search_placeholder: "Search title, author, ISBN...",
+            search: "🔍",
+            catalog: "Catalog",
+            my_loans: "My Loans",
+            holds: "Holds",
+            staff_checkout: "Check Out",
+            staff_return: "Return",
+            staff_add_book: "Add Book",
+            staff_inventory: "Inventory",
+            staff_patrons: "Patrons",
+            staff_reports: "Reports",
+            scan_barcode: "Scan Barcode",
+            cancel: "Cancel",
+            welcome: "Welcome",
+            checkout_success: "✅ Book checked out! Due in 14 days.",
+            checkout_fail: "❌ Checkout failed. Book may be unavailable.",
+            renew_success: "✅ Loan renewed for 14 days.",
+            renew_fail: "❌ Renewal failed.",
+            patron_not_found: "Patron not found.",
+            no_books: "No books found",
+            no_loans: "No active loans"
+        },
+        es: {
+            tagline: "Tu Biblioteca Comunitaria",
+            patron_mode: "📖 Usuario",
+            staff_mode: "🔧 Personal",
+            not_logged: "No conectado",
+            scan_card: "📇 Escanear carnet",
+            search_placeholder: "Buscar título, autor, ISBN...",
+            search: "🔍",
+            catalog: "Catálogo",
+            my_loans: "Mis préstamos",
+            holds: "Reservas",
+            staff_checkout: "Prestar",
+            staff_return: "Devolver",
+            staff_add_book: "Añadir libro",
+            staff_inventory: "Inventario",
+            staff_patrons: "Usuarios",
+            staff_reports: "Informes",
+            scan_barcode: "Escanear código",
+            cancel: "Cancelar",
+            welcome: "Bienvenido",
+            checkout_success: "✅ Libro prestado. Vence en 14 días.",
+            checkout_fail: "❌ No se pudo prestar. No disponible.",
+            renew_success: "✅ Préstamo renovado 14 días.",
+            renew_fail: "❌ Renovación fallida.",
+            patron_not_found: "Usuario no encontrado.",
+            no_books: "No se encontraron libros",
+            no_loans: "No hay préstamos activos"
+        },
+        fr: {
+            tagline: "Votre Bibliothèque Communautaire",
+            patron_mode: "📖 Usager",
+            staff_mode: "🔧 Personnel",
+            not_logged: "Non connecté",
+            scan_card: "📇 Scanner carte",
+            search_placeholder: "Rechercher titre, auteur, ISBN...",
+            search: "🔍",
+            catalog: "Catalogue",
+            my_loans: "Mes prêts",
+            holds: "Réservations",
+            staff_checkout: "Prêter",
+            staff_return: "Retourner",
+            staff_add_book: "Ajouter livre",
+            staff_inventory: "Inventaire",
+            staff_patrons: "Usagers",
+            staff_reports: "Rapports",
+            scan_barcode: "Scanner code",
+            cancel: "Annuler",
+            welcome: "Bienvenue",
+            checkout_success: "✅ Livre emprunté. Dû dans 14 jours.",
+            checkout_fail: "❌ Prêt impossible. Indisponible.",
+            renew_success: "✅ Prêt renouvelé 14 jours.",
+            renew_fail: "❌ Renouvellement échoué.",
+            patron_not_found: "Usager non trouvé.",
+            no_books: "Aucun livre trouvé",
+            no_loans: "Aucun prêt actif"
+        }
+    };
+    let currentLanguage = localStorage.getItem('heartlib_lang') || 'en';
+    function setLanguage(lang) {
+        currentLanguage = lang;
+        localStorage.setItem('heartlib_lang', lang);
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (translations[lang] && translations[lang][key]) {
+                if (el.tagName === 'INPUT' && el.placeholder !== undefined) {
+                    el.placeholder = translations[lang][key];
+                } else {
+                    el.innerText = translations[lang][key];
+                }
+            }
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            if (translations[lang] && translations[lang][key]) {
+                el.placeholder = translations[lang][key];
+            }
+        });
+    }
+    document.getElementById('langSelect').value = currentLanguage;
+    setLanguage(currentLanguage);
+    document.getElementById('langSelect').addEventListener('change', (e) => setLanguage(e.target.value));
+
+    // ---------- Theme ----------
+    const darkMode = localStorage.getItem('heartlib_theme') === 'dark';
+    if (darkMode) document.body.classList.add('dark');
+    document.getElementById('themeToggle').addEventListener('click', () => {
+        document.body.classList.toggle('dark');
+        localStorage.setItem('heartlib_theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    });
+
+    // ---------- Global state ----------
+    let currentMode = 'patron';
+    let currentPatron = null;
+    let currentTab = 'catalog';
+    let html5QrCode = null;
+
+    const patronView = document.getElementById('patronView');
+    const staffView = document.getElementById('staffView');
+    const patronNameEl = document.getElementById('patronName');
+    const patronLoansEl = document.getElementById('patronLoans');
+    const patronAvatar = document.getElementById('patronAvatar');
+
+    // ---------- API helpers ----------
+    async function apiCall(endpoint, options = {}) {
+        const res = await fetch(endpoint, options);
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+    }
+    async function searchBooks(query) { return apiCall(`/api/search?q=${encodeURIComponent(query)}`); }
+    async function getPatron(barcode) { return apiCall(`/api/patrons/${barcode}`); }
+    async function getPatronLoans(patronId) { return apiCall(`/api/patron/${patronId}/loans`); }
+    async function checkoutBook(bookId, patronId) { return apiCall('/api/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ book_id: bookId, patron_id: patronId, due_days: 14 }) }); }
+    async function renewLoan(loanId) { return apiCall('/api/renew', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ loan_id: loanId, extra_days: 14 }) }); }
+
+    // ---------- UI Helpers ----------
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, function(m) { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
+
+    async function renderSearchResults(books) {
+        const container = document.getElementById('searchResults');
+        if (!books.length) { container.innerHTML = `<div class="card text-center">${translations[currentLanguage].no_books}</div>`; return; }
+        container.innerHTML = books.map(book => `
+            <div class="book-card">
+                <div class="book-info">
+                    <h3>${escapeHtml(book.title)}</h3>
+                    <p>${escapeHtml(book.author || 'Unknown author')}</p>
+                    <p>ISBN: ${book.isbn || 'N/A'}</p>
+                </div>
+                <div>
+                    <span class="status-badge ${book.copies_available > 0 ? 'status-available' : 'status-unavailable'}">
+                        ${book.copies_available > 0 ? '✅ Available' : '❌ Unavailable'}
+                    </span>
+                    ${currentPatron && book.copies_available > 0 ? `<button class="action-btn" onclick="handleCheckout('${book.id}')">Borrow</button>` : ''}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    async function renderLoans() {
+        if (!currentPatron) { document.getElementById('loansList').innerHTML = `<div class="card text-center">${translations[currentLanguage].not_logged}</div>`; return; }
+        const loans = await getPatronLoans(currentPatron.id);
+        if (!loans.length) { document.getElementById('loansList').innerHTML = `<div class="card text-center">${translations[currentLanguage].no_loans}</div>`; return; }
+        const now = Date.now() / 1000;
+        document.getElementById('loansList').innerHTML = loans.map(loan => {
+            const dueDate = new Date(loan.due_time * 1000);
+            const isOverdue = loan.due_time < now;
+            return `
+                <div class="loan-card">
+                    <div>
+                        <strong>${escapeHtml(loan.title)}</strong><br>
+                        Due: ${dueDate.toLocaleDateString()} ${isOverdue ? '<span class="overdue">⚠️ OVERDUE</span>' : ''}
+                    </div>
+                    <button class="renew-btn" onclick="handleRenew('${loan.id}')">Renew</button>
+                </div>
+            `;
+        }).join('');
+    }
+
+    async function displaySearch(query) { const books = await searchBooks(query); renderSearchResults(books); }
+    async function displayPatronLoans() { if (currentTab === 'loans') await renderLoans(); if (currentPatron) { const loans = await getPatronLoans(currentPatron.id); patronLoansEl.innerText = `${loans.length} active loan${loans.length !== 1 ? 's' : ''}`; } else { patronLoansEl.innerText = '0 active loans'; } }
+
+    window.handleCheckout = async (bookId) => { if (!currentPatron) { alert('Please scan your library card first.'); return; } const result = await checkoutBook(bookId, currentPatron.id); alert(result.success ? translations[currentLanguage].checkout_success : translations[currentLanguage].checkout_fail); if (result.success) { displaySearch(document.getElementById('searchInput').value); displayPatronLoans(); } };
+    window.handleRenew = async (loanId) => { const result = await renewLoan(loanId); alert(result.success ? translations[currentLanguage].renew_success : translations[currentLanguage].renew_fail); if (result.success) { await renderLoans(); displayPatronLoans(); } };
+
+    // ---------- Camera with permission handling ----------
+    async function startBarcodeScanner(onSuccess) {
+        // Check if browser supports camera
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            alert("Your browser does not support camera access.");
+            return;
+        }
+        // Request permission explicitly
+        let permissionGranted = false;
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+            // Permission granted, stop temporary stream
+            stream.getTracks().forEach(track => track.stop());
+            permissionGranted = true;
+        } catch (err) {
+            if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                alert("Camera permission denied. Please allow camera access in your browser settings and reload.");
+            } else {
+                alert("Could not access camera. Please check your device.");
+            }
+            return;
+        }
+        if (!permissionGranted) return;
+
+        // Now start actual scanner
+        const modal = document.getElementById('scannerModal');
+        modal.style.display = 'flex';
+        html5QrCode = new Html5Qrcode("qr-reader");
+        try {
+            await html5QrCode.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                (decodedText) => {
+                    if (html5QrCode) {
+                        html5QrCode.stop().then(() => { html5QrCode = null; }).catch(console.error);
+                    }
+                    modal.style.display = 'none';
+                    onSuccess(decodedText);
+                },
+                (errorMessage) => { /* ignore */ }
+            );
+        } catch(err) {
+            console.error(err);
+            alert("Could not start scanner.");
+            modal.style.display = 'none';
+        }
+    }
+
+    document.getElementById('closeScanner').onclick = () => {
+        if (html5QrCode) {
+            html5QrCode.stop().then(() => { html5QrCode = null; }).catch(console.error);
+        }
+        document.getElementById('scannerModal').style.display = 'none';
+    };
+
+    async function scanPatronCard() {
+        startBarcodeScanner(async (barcode) => {
+            try {
+                const patron = await getPatron(barcode);
+                if (patron) {
+                    currentPatron = patron;
+                    patronNameEl.innerText = patron.name;
+                    patronAvatar.innerText = patron.name.charAt(0);
+                    await displayPatronLoans();
+                    alert(`${translations[currentLanguage].welcome} ${patron.name}!`);
+                } else {
+                    alert(translations[currentLanguage].patron_not_found);
+                }
+            } catch(e) { alert('Error finding patron.'); }
+        });
+    }
+
+    function staffCheckout() {
+        startBarcodeScanner(async (barcode) => {
+            let patron = await getPatron(barcode);
+            if (!patron) { alert('Please scan patron card first.'); return; }
+            currentPatron = patron;
+            alert(`Patron: ${patron.name}. Now scan book barcode.`);
+            startBarcodeScanner(async (bookBarcode) => {
+                const books = await searchBooks(bookBarcode);
+                if (books.length) {
+                    const book = books[0];
+                    const result = await checkoutBook(book.id, patron.id);
+                    alert(result.success ? translations[currentLanguage].checkout_success : translations[currentLanguage].checkout_fail);
+                } else { alert('Book not found.'); }
+            });
+        });
+    }
+
+    document.getElementById('scanPatronBtn').onclick = scanPatronCard;
+
+    // Mode switching
+    function setMode(mode) {
+        currentMode = mode;
+        if (mode === 'patron') {
+            patronView.classList.remove('hidden');
+            staffView.classList.add('hidden');
+        } else {
+            patronView.classList.add('hidden');
+            staffView.classList.remove('hidden');
+        }
+        document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
+    }
+    document.querySelectorAll('.mode-btn').forEach(btn => btn.onclick = () => setMode(btn.dataset.mode));
+
+    // Tab switching
+    function setTab(tab) {
+        currentTab = tab;
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+        document.getElementById(`${tab}Tab`).classList.remove('hidden');
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.toggle('active', item.dataset.tab === tab));
+        if (tab === 'loans') renderLoans();
+        else if (tab === 'catalog') displaySearch(document.getElementById('searchInput').value);
+    }
+    document.querySelectorAll('.nav-item').forEach(item => item.onclick = () => setTab(item.dataset.tab));
+
+    // Staff actions
+    document.querySelectorAll('.staff-card').forEach(card => {
+        card.onclick = () => {
+            const action = card.dataset.action;
+            if (action === 'checkout') staffCheckout();
+            else if (action === 'return') alert('Return: Scan book barcode to return.');
+            else alert(`${action} feature coming soon.`);
+        };
+    });
+
+    document.getElementById('searchBtn').onclick = () => { const q = document.getElementById('searchInput').value; if (q) displaySearch(q); };
+    document.getElementById('searchInput').onkeypress = (e) => { if (e.key === 'Enter') document.getElementById('searchBtn').click(); };
+
+    // Initial load
+    setMode('patron');
+    setTab('catalog');
+    displaySearch('');
+</script>
+</body>
+</html>
