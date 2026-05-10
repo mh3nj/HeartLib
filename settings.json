@@ -1,0 +1,23 @@
+{
+  "theme": "Dark",
+  "language": "en",
+  "auto_sync_interval": 30,
+  "default_loan_days": 14,
+  "items_per_page": 50,
+  "backup_enabled": true,
+  "backup_interval_days": 7,
+  "library_name": "HeartLib Library",
+  "library_address": "",
+  "library_phone": "",
+  "library_email": "",
+  "max_loans_per_patron": 10,
+  "enable_fines": false,
+  "fine_per_day": 25,
+  "enable_sync": false,
+  "sync_interval": 30,
+  "server_host": "localhost",
+  "server_port": 8765,
+  "enable_auto_backup": true,
+  "backup_interval": 7,
+  "backup_location": "./backups"
+}
