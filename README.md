@@ -65,48 +65,48 @@ built because libraries deserve better. librarians deserve better. patrons deser
 
 <table>
     <tr>
-        <td><img src="screenshots/1.png" alt="HeartLib app's screenshot" width="48%"></td>
-        <td><img src="screenshots/2.png" alt="HeartLib app's screenshot" width="48%"></td>
+        <td><img src="screenshots/1.png" alt="HeartLib app's screenshot"></td>
+        <td><img src="screenshots/2.png" alt="HeartLib app's screenshot"></td>
     </tr>
     <tr>
-        <td><img src="screenshots/3.png" alt="HeartLib app's screenshot" width="48%"></td>
-        <td><img src="screenshots/4.png" alt="HeartLib app's screenshot" width="48%"></td>
+        <td><img src="screenshots/3.png" alt="HeartLib app's screenshot"></td>
+        <td><img src="screenshots/4.png" alt="HeartLib app's screenshot"></td>
     </tr>
     <tr>
-        <td><img src="screenshots/5.png" alt="HeartLib app's screenshot" width="48%"></td>
-        <td><img src="screenshots/6.png" alt="HeartLib app's screenshot" width="48%"></td>
+        <td><img src="screenshots/5.png" alt="HeartLib app's screenshot"></td>
+        <td><img src="screenshots/6.png" alt="HeartLib app's screenshot"></td>
     </tr>
     <tr>
-        <td><img src="screenshots/7.png" alt="HeartLib app's screenshot" width="48%"></td>
-        <td><img src="screenshots/8.png" alt="HeartLib app's screenshot" width="48%"></td>
+        <td><img src="screenshots/7.png" alt="HeartLib app's screenshot"></td>
+        <td><img src="screenshots/8.png" alt="HeartLib app's screenshot"></td>
     </tr>
     <tr>
-        <td><img src="screenshots/9.png" alt="HeartLib app's screenshot" width="48%"></td>
-        <td><img src="screenshots/10.png" alt="HeartLib app's screenshot" width="48%"></td>
+        <td><img src="screenshots/9.png" alt="HeartLib app's screenshot"></td>
+        <td><img src="screenshots/10.png" alt="HeartLib app's screenshot"></td>
     </tr>
     <tr>
-        <td><img src="screenshots/11.png" alt="HeartLib app's screenshot" width="48%"></td>
-        <td><img src="screenshots/12.png" alt="HeartLib app's screenshot" width="48%"></td>
+        <td><img src="screenshots/11.png" alt="HeartLib app's screenshot"></td>
+        <td><img src="screenshots/12.png" alt="HeartLib app's screenshot"></td>
     </tr>
     <tr>
-        <td><img src="screenshots/13.png" alt="HeartLib app's screenshot" width="48%"></td>
-        <td><img src="screenshots/14.png" alt="HeartLib app's screenshot" width="48%"></td>
+        <td><img src="screenshots/13.png" alt="HeartLib app's screenshot"></td>
+        <td><img src="screenshots/14.png" alt="HeartLib app's screenshot"></td>
     </tr>
     <tr>
-        <td><img src="screenshots/15.png" alt="HeartLib app's screenshot" width="48%"></td>
-        <td><img src="screenshots/16.png" alt="HeartLib app's screenshot" width="48%"></td>
+        <td><img src="screenshots/15.png" alt="HeartLib app's screenshot"></td>
+        <td><img src="screenshots/16.png" alt="HeartLib app's screenshot"></td>
     </tr>
     <tr>
-        <td><img src="screenshots/17.png" alt="HeartLib app's screenshot" width="48%"></td>
-        <td><img src="screenshots/18.png" alt="HeartLib app's screenshot" width="48%"></td>
+        <td><img src="screenshots/17.png" alt="HeartLib app's screenshot"></td>
+        <td><img src="screenshots/18.png" alt="HeartLib app's screenshot"></td>
     </tr>
     <tr>
-        <td><img src="screenshots/19.png" alt="HeartLib app's screenshot" width="48%"></td>
-        <td><img src="screenshots/20.png" alt="HeartLib app's screenshot" width="48%"></td>
+        <td><img src="screenshots/19.png" alt="HeartLib app's screenshot"></td>
+        <td><img src="screenshots/20.png" alt="HeartLib app's screenshot"></td>
     </tr>
     <tr>
-        <td><img src="screenshots/21.png" alt="HeartLib app's screenshot" width="48%"></td>
-        <td><img src="screenshots/22.png" alt="HeartLib app's screenshot" width="48%"></td>
+        <td><img src="screenshots/21.png" alt="HeartLib app's screenshot"></td>
+        <td><img src="screenshots/22.png" alt="HeartLib app's screenshot"></td>
     </tr>
     <tr>
         <td><img src="screenshots/23.png" alt="HeartLib app's screenshot"></td>
