@@ -1,11 +1,12 @@
 # heartlib/main.py
 import sys
 import threading
+import os
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                              QHBoxLayout, QSplitter, QStatusBar, QMenuBar, 
-                             QLabel, QMessageBox)
+                             QLabel, QMessageBox, QSplashScreen)
 from PyQt6.QtCore import Qt, QTimer
-from PyQt6.QtGui import QAction
+from PyQt6.QtGui import QAction, QIcon, QPixmap
 
 # Import all widgets
 from gui.quick_actions import QuickActionsWidget
@@ -30,9 +31,37 @@ from database import DatabaseManager, CRUD
 from database.models import Book
 from database.models import Patron
 
+
+class HeartLibSplashScreen(QSplashScreen):
+    """Splash screen shown during app startup"""
+    def __init__(self):
+        super().__init__()
+        self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint)
+        
+        # Try to load logo, otherwise show text
+        logo_path = "resources/icons/heartlib_logo_256.png"
+        if os.path.exists(logo_path):
+            pixmap = QPixmap(logo_path)
+            scaled = pixmap.scaled(300, 300, Qt.AspectRatioMode.KeepAspectRatio,
+                                   Qt.TransformationMode.SmoothTransformation)
+            self.setPixmap(scaled)
+        else:
+            # Fallback text splash
+            self.setPixmap(QPixmap(400, 300))
+            self.showMessage("❤️ HeartLib\nLoading...", 
+                            Qt.AlignmentFlag.AlignCenter, 
+                            Qt.GlobalColor.white)
+
+
 class HeartLibMainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        
+        # Set window icon
+        icon_path = "resources/icons/favicon-32x32.png"
+        if os.path.exists(icon_path):
+            self.setWindowIcon(QIcon(icon_path))
+        
         self.setWindowTitle("HeartLib – Library with a Heart")
         self.setMinimumSize(1200, 800)
         
@@ -115,6 +144,16 @@ class HeartLibMainWindow(QMainWindow):
         # Add sync status to status bar
         self.sync_status = QLabel("🔄 Sync: Ready")
         self.status_bar.addPermanentWidget(self.sync_status)
+
+        # Add logo to status bar
+        logo_path = "resources/icons/favicon-16x16.png"
+        if os.path.exists(logo_path):
+            logo_label = QLabel()
+            pixmap = QPixmap(logo_path)
+            scaled = pixmap.scaled(16, 16, Qt.AspectRatioMode.KeepAspectRatio,
+                                Qt.TransformationMode.SmoothTransformation)
+            logo_label.setPixmap(scaled)
+            self.status_bar.addPermanentWidget(logo_label)
         
         # ----- Load Data from Database -----
         self.load_books_into_search()
@@ -170,13 +209,26 @@ class HeartLibMainWindow(QMainWindow):
         
         # Help menu
         help_menu = menubar.addMenu("❓ Help")
+        
+        # About action
+        about_action = QAction("❤️ About HeartLib", self)
+        about_action.triggered.connect(self.open_about)
+        help_menu.addAction(about_action)
+        
         tutorial_action = QAction("📖 In-app Tutorial", self)
         tutorial_action.triggered.connect(self.open_help)
         help_menu.addAction(tutorial_action)
+        
         coffee_action = QAction("☕ Buy us a coffee", self)
         coffee_action.triggered.connect(self.buy_coffee)
         help_menu.addAction(coffee_action)
         
+    def open_about(self):
+        """Open about dialog"""
+        from gui.about_dialog import AboutDialog
+        dialog = AboutDialog(self)
+        dialog.exec()
+
     def load_books_into_search(self):
         """Load all books from database into search results"""
         books = self.crud.get_all_books()
@@ -511,10 +563,16 @@ class HeartLibMainWindow(QMainWindow):
         self.api_server.start_background()
         self.status_bar.showMessage("🌐 Mobile API server started on port 8766", 3000)
 
+
 def main():
     app = QApplication(sys.argv)
     app.setApplicationName("HeartLib")
     app.setOrganizationName("HeartLib Community")
+    
+    # Show splash screen
+    splash = HeartLibSplashScreen()
+    splash.show()
+    app.processEvents()
     
     try:
         from config import config
@@ -535,7 +593,12 @@ def main():
     window.theme_manager = theme_manager
     window.config = config
     window.show()
+    
+    # Close splash screen after window appears
+    splash.finish(window)
+    
     sys.exit(app.exec())
+
 
 if __name__ == "__main__":
     main()
